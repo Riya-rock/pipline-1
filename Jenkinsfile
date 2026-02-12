@@ -4,9 +4,10 @@ pipeline {
     stages {
         stage('Checkout') {
     steps {
-        git 'https://github.com/Riya-rock/pipline-1.git'
+        git branch: 'main', url: 'https://github.com/Riya-rock/pipline-1.git'
     }
 }
+
         stage('Build') {
             steps {
                 echo 'Building the application'
