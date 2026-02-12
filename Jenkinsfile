@@ -2,29 +2,22 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-    steps {
-        git branch: 'main', url: 'https://github.com/Riya-rock/pipline-1.git'
-    }
-}
 
         stage('Build') {
             steps {
-                echo 'Building the application'
-               bat 'mvn clean package'
+                echo 'Building...'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests'
-                mvn test
+                echo 'Testing...'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying application'
+                echo 'Deploying...'
             }
         }
     }
