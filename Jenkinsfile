@@ -11,7 +11,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application'
-                mvn clean package
+               bat 'mvn clean package'
             }
         }
 
