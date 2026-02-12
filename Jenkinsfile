@@ -3,11 +3,10 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            steps {
-                git 'https://github.com/username/repo.git'
-            }
-        }
-
+    steps {
+        git 'https://github.com/Riya-rock/pipline-1.git'
+    }
+}
         stage('Build') {
             steps {
                 echo 'Building the application'
