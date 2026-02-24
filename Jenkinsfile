@@ -4,7 +4,7 @@ pipeline {
   environment {
     IMAGE_NAME = "riya-demo-app"
     CONTAINER_NAME = "riya-demo-container"
-    HOST_PORT = "8080"
+    HOST_PORT = "8081"
     CONTAINER_PORT = "8080"
   }
 
@@ -30,19 +30,13 @@ pipeline {
         sh 'docker images | head -n 5'
       }
     }
-stage('Run Docker Container') {
-  steps {
-    sh '''
-      docker stop $CONTAINER_NAME 2>/dev/null || true
-      docker rm   $CONTAINER_NAME 2>/dev/null || true
 
-      docker run -d \
-        -p 8081:$CONTAINER_PORT \
-        --name $CONTAINER_NAME \
-        $IMAGE_NAME:latest
-
-      docker ps | grep $CONTAINER_NAME || true
-    '''
+    stage('Stop & Remove Old Container') {
+      steps {
+        sh '''
+          docker stop $CONTAINER_NAME 2>/dev/null || true
+          docker rm   $CONTAINER_NAME 2>/dev/null || true
+        '''
       }
     }
 
@@ -50,22 +44,19 @@ stage('Run Docker Container') {
       steps {
         sh '''
           docker run -d \
-          -p $HOST_PORT:$CONTAINER_PORT \
-          --name $CONTAINER_NAME \
-          $IMAGE_NAME:latest
+            -p $HOST_PORT:$CONTAINER_PORT \
+            --name $CONTAINER_NAME \
+            $IMAGE_NAME:latest
 
           docker ps | grep $CONTAINER_NAME || true
+          docker logs $CONTAINER_NAME --tail 20 || true
         '''
       }
     }
   }
 
   post {
-    success {
-      echo '✅ Riya Pipeline Success — Docker image built & container running!'
-    }
-    failure {
-      echo '❌ Build failed!'
-    }
+    success { echo '✅ Docker image built & container running on 8081!' }
+    failure { echo '❌ Build failed!' }
   }
 }
