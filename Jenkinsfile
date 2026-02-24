@@ -4,45 +4,55 @@ pipeline {
   environment {
     IMAGE_NAME = "myapp-image"
     CONTAINER_NAME = "myapp-container"
+    HOST_PORT = "8080"
+    CONTAINER_PORT = "8080"
   }
 
   stages {
 
-    stage('Checkout') {
+    stage('Checkout Code') {
       steps {
-        git branch: 'main', url: 'https://github.com/Riya-rock/pipline-1.git'
+        git branch: 'main',
+        url: 'https://github.com/your-repo/your-project.git'
       }
     }
 
     stage('Maven Build') {
       steps {
-        sh 'mvn -v'
-        sh 'mvn clean package'
-        sh 'ls -lah target'
+        sh 'mvn clean package -DskipTests'
       }
     }
 
-    stage('Docker Build') {
+    stage('Build Docker Image') {
       steps {
-        sh 'docker version'
-        sh 'docker build -t $IMAGE_NAME .'
-        sh 'docker images | head -n 5'
+        sh 'docker build -t $IMAGE_NAME:latest .'
       }
     }
 
-    stage('Run Container') {
+    stage('Stop & Remove Old Container') {
       steps {
         sh '''
-          docker rm -f $CONTAINER_NAME || true
-          docker run -d --name $CONTAINER_NAME $IMAGE_NAME
-          docker logs $CONTAINER_NAME --tail 50
+          docker stop $CONTAINER_NAME 2>/dev/null || true
+          docker rm   $CONTAINER_NAME 2>/dev/null || true
+        '''
+      }
+    }
+
+    stage('Run Docker Container') {
+      steps {
+        sh '''
+          docker run -d \
+            -p $HOST_PORT:$CONTAINER_PORT \
+            --name $CONTAINER_NAME \
+            $IMAGE_NAME:latest
+          docker ps | grep $CONTAINER_NAME || true
         '''
       }
     }
   }
 
   post {
-    success { echo "✅ Maven + Docker pipeline success" }
-    failure { echo "❌ Pipeline failed" }
+    success { echo '✅ Application deployed successfully!' }
+    failure { echo '❌ Build failed!' }
   }
 }
