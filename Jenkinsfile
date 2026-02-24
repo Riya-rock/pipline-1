@@ -2,8 +2,8 @@ pipeline {
   agent any
 
   environment {
-    IMAGE_NAME = "myapp-image"
-    CONTAINER_NAME = "myapp-container"
+    IMAGE_NAME = "riya-demo-app"
+    CONTAINER_NAME = "riya-demo-container"
     HOST_PORT = "8080"
     CONTAINER_PORT = "8080"
   }
@@ -13,12 +13,13 @@ pipeline {
     stage('Checkout Code') {
       steps {
         git branch: 'main',
-        url: 'https://github.com/your-repo/your-project.git'
+        url: 'https://github.com/Riya-rock/pipline-1.git'
       }
     }
 
     stage('Maven Build') {
       steps {
+        sh 'mvn -v'
         sh 'mvn clean package -DskipTests'
       }
     }
@@ -26,6 +27,7 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         sh 'docker build -t $IMAGE_NAME:latest .'
+        sh 'docker images | head -n 5'
       }
     }
 
@@ -33,7 +35,7 @@ pipeline {
       steps {
         sh '''
           docker stop $CONTAINER_NAME 2>/dev/null || true
-          docker rm   $CONTAINER_NAME 2>/dev/null || true
+          docker rm $CONTAINER_NAME 2>/dev/null || true
         '''
       }
     }
@@ -42,9 +44,10 @@ pipeline {
       steps {
         sh '''
           docker run -d \
-            -p $HOST_PORT:$CONTAINER_PORT \
-            --name $CONTAINER_NAME \
-            $IMAGE_NAME:latest
+          -p $HOST_PORT:$CONTAINER_PORT \
+          --name $CONTAINER_NAME \
+          $IMAGE_NAME:latest
+
           docker ps | grep $CONTAINER_NAME || true
         '''
       }
@@ -52,7 +55,11 @@ pipeline {
   }
 
   post {
-    success { echo '✅ Application deployed successfully!' }
-    failure { echo '❌ Build failed!' }
+    success {
+      echo '✅ Riya Pipeline Success — Docker image built & container running!'
+    }
+    failure {
+      echo '❌ Build failed!'
+    }
   }
 }
