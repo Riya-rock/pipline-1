@@ -2,61 +2,48 @@ pipeline {
   agent any
 
   environment {
-    IMAGE_NAME = "riya-demo-app"
-    CONTAINER_NAME = "riya-demo-container"
-    HOST_PORT = "8081"
-    CONTAINER_PORT = "8080"
+    IMAGE_NAME = "riya-nginx-app"
+    CONTAINER_NAME = "riya-nginx-container"
+    HOST_PORT = "8081"   // Jenkins is 8080, so app is 8081
   }
 
   stages {
 
-    stage('Checkout Code') {
+    stage('Checkout') {
       steps {
         git branch: 'main',
         url: 'https://github.com/Riya-rock/pipline-1.git'
       }
     }
 
-    stage('Maven Build') {
+    stage('Maven Validate') {
       steps {
         sh 'mvn -v'
-        sh 'mvn clean package -DskipTests'
+        sh 'mvn -q validate'
       }
     }
 
-    stage('Build Docker Image') {
+    stage('Docker Build') {
       steps {
+        sh 'docker version'
         sh 'docker build -t $IMAGE_NAME:latest .'
         sh 'docker images | head -n 5'
       }
     }
 
-    stage('Stop & Remove Old Container') {
+    stage('Run') {
       steps {
         sh '''
-          docker stop $CONTAINER_NAME 2>/dev/null || true
-          docker rm   $CONTAINER_NAME 2>/dev/null || true
-        '''
-      }
-    }
-
-    stage('Run Docker Container') {
-      steps {
-        sh '''
-          docker run -d \
-            -p $HOST_PORT:$CONTAINER_PORT \
-            --name $CONTAINER_NAME \
-            $IMAGE_NAME:latest
-
+          docker rm -f $CONTAINER_NAME 2>/dev/null || true
+          docker run -d -p $HOST_PORT:80 --name $CONTAINER_NAME $IMAGE_NAME:latest
           docker ps | grep $CONTAINER_NAME || true
-          docker logs $CONTAINER_NAME --tail 20 || true
         '''
       }
     }
   }
 
   post {
-    success { echo '✅ Docker image built & container running on 8081!' }
-    failure { echo '❌ Build failed!' }
+    success { echo "✅ SUCCESS: Open http://192.168.112.128:8081" }
+    failure { echo "❌ FAILED" }
   }
 }
