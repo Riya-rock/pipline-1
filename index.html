@@ -1,23 +1,69 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <title>Riya DevOps Demo</title>
+
 <style>
 body{
-  font-family: Arial;
-  text-align:center;
-  margin-top:100px;
-  background:#0f172a;
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:Segoe UI, sans-serif;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
   color:white;
 }
-h1{color:#22c55e}
+
+.card{
+  background:#111827;
+  padding:40px 60px;
+  border-radius:16px;
+  text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+  animation:fade 1.2s ease;
+}
+
+h1{
+  color:#22c55e;
+  margin-bottom:10px;
+}
+
+.status{
+  margin-top:15px;
+  display:inline-block;
+  padding:8px 18px;
+  border-radius:30px;
+  background:#22c55e;
+  color:#022c22;
+  font-weight:bold;
+}
+
+p{
+  color:#9ca3af;
+  margin-top:12px;
+}
+
+@keyframes fade{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
 </style>
 </head>
+
 <body>
 
-<h1>Jenkins + Docker Success!</h1>
-<h2>its done</h2>
-<p>Nginx container successfully deployed </p>
+<div class="card">
+  <h1>Jenkins + Docker Deployment</h1>
+  <h2>Pipeline Execution Successful 🚀</h2>
+
+  <div class="status">RUNNING</div>
+
+  <p>Nginx container is live and serving this page.</p>
+  <p>Configured & Deployed by <b>Riya</b></p>
+</div>
 
 </body>
 </html>
