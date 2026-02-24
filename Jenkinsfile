@@ -30,13 +30,19 @@ pipeline {
         sh 'docker images | head -n 5'
       }
     }
+stage('Run Docker Container') {
+  steps {
+    sh '''
+      docker stop $CONTAINER_NAME 2>/dev/null || true
+      docker rm   $CONTAINER_NAME 2>/dev/null || true
 
-    stage('Stop & Remove Old Container') {
-      steps {
-        sh '''
-          docker stop $CONTAINER_NAME 2>/dev/null || true
-          docker rm $CONTAINER_NAME 2>/dev/null || true
-        '''
+      docker run -d \
+        -p 8081:$CONTAINER_PORT \
+        --name $CONTAINER_NAME \
+        $IMAGE_NAME:latest
+
+      docker ps | grep $CONTAINER_NAME || true
+    '''
       }
     }
 
